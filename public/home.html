@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Greenhouse Monitor</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: url('https://cdn.shopify.com/s/files/1/0724/4598/5057/files/monstera_plant_3.png?v=1705475753') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+      padding: 10px;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 0;
+    }
+
+    h1 {
+      margin-top: 20px;
+      z-index: 1;
+      font-size: 2em;
+      text-align: center;
+    }
+
+    .container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 20px;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+      text-align: left;
+      width: 100%;
+      max-width: 1000px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      z-index: 1;
+      margin-top: 20px;
+    }
+
+    .sensor-control {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 10px;
+      padding: 15px;
+      border-radius: 10px;
+      background: rgba(255, 255, 255, 0.2);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .sensor-data {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .sensor-data p {
+      margin: 5px 0;
+      font-size: 1.3em;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-around;
+      gap: 10px;
+      margin-top: 5px;
+    }
+
+    .controls button {
+      background-color: #ff9800;
+      color: white;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s;
+      font-size: 1em;
+    }
+
+    .controls button:hover {
+      background-color: #fb8c00;
+      transform: scale(1.05);
+    }
+
+    .reading-label {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .reading-icon {
+      font-size: 1.8em;
+    }
+
+    .reading-icon-air {
+      font-size: 1.6em;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        grid-template-columns: 1fr;
+        padding: 20px;
+      }
+
+      .sensor-control {
+        padding: 10px;
+      }
+
+      .controls button {
+        padding: 8px 20px;
+        font-size: 0.9em;
+      }
+
+      .sensor-data p {
+        font-size: 1.1em;
+      }
+
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .controls button {
+        padding: 6px 15px;
+        font-size: 0.8em;
+      }
+
+      .sensor-data p {
+        font-size: 1em;
+      }
+
+      h1 {
+        font-size: 1.6em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome to Greenhouse Monitor</h1>
+  <p>Monitor and control your greenhouse here.</p>
+  <div class="container">
+    <div class="sensor-control">
+      <div class="sensor-data">
+        <p class="reading-label">
+          <span class="reading-icon">🌡️</span> Temperature: 
+          <span id="temperature">--</span> °C
+        </p>
+        <p class="reading-label">
+          <span class="reading-icon">💧</span> Humidity: 
+          <span id="humidity">--</span> %
+        </p>
+      </div>
+      <div class="controls">
+        <button onclick="controlFan('ON')">Turn Fan On</button>
+        <button onclick="controlFan('OFF')">Turn Fan Off</button>
+      </div>
+    </div>
+
+    <div class="sensor-control">
+      <div class="sensor-data">
+        <p class="reading-label">
+          <span class="reading-icon">🔆</span> Light Intensity: 
+          <span id="lightIntensity">--</span> %
+        </p>
+      </div>
+      <div class="controls">
+        <button onclick="controlLight('ON')">Turn Light On</button>
+        <button onclick="controlLight('OFF')">Turn Light Off</button>
+      </div>
+    </div>
+
+    <div class="sensor-control">
+      <div class="sensor-data">
+        <p class="reading-label">
+          <span class="reading-icon reading-icon-air">🌫️</span> Air Quality: 
+          <span id="airQuality">--</span> AQI
+        </p>
+      </div>
+    </div>
+
+    <div class="sensor-control">
+      <div class="sensor-data">
+        <p class="reading-label">
+          <span class="reading-icon">🌱</span> Soil Moisture: 
+          <span id="soilMoisture">--</span> %
+        </p>
+      </div>
+      <div class="controls">
+        <button onclick="controlPump('ON')">Turn Pump On</button>
+        <button onclick="controlPump('OFF')">Turn Pump Off</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- The core Firebase JS SDK is always required and must be listed first -->
+  <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/8.8.1/firebase-database.js"></script>
+
+  <script>
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBh8fzcEDsX73eoIWUxnSogCLd6QyrkN0Q",
+      authDomain: "greenhouse-ae8d7.firebaseapp.com",
+      databaseURL: "https://greenhouse-ae8d7-default-rtdb.firebaseio.com",
+      projectId: "greenhouse-ae8d7",
+      storageBucket: "greenhouse-ae8d7.appspot.com",
+      messagingSenderId: "50555422808",
+      appId: "1:50555422808:web:f9e2177d1d60e81655222d"
+    };
+
+    // Initialize Firebase
+    firebase.initializeApp(firebaseConfig);
+    var database = firebase.database();
+
+    // Listen for temperature updates
+    var temperatureRef = database.ref('esp8266/temperature');
+    temperatureRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      document.getElementById('temperature').textContent = data;
+    });
+
+    // Listen for humidity updates
+    var humidityRef = database.ref('esp8266/humidity');
+    humidityRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      document.getElementById('humidity').textContent = data;
+    });
+
+    // Listen for soil moisture updates
+    var soilMoistureRef = database.ref('esp8266/soilMoisture');
+    soilMoistureRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      document.getElementById('soilMoisture').textContent = data;
+    });
+
+    // Listen for air quality updates
+    var airQualityRef = database.ref('esp8266/airQuality');
+    airQualityRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      document.getElementById('airQuality').textContent = data;
+    });
+
+    // Listen for light intensity updates (LDR)
+    var lightIntensityRef = database.ref('esp8266/lightIntensity');
+    lightIntensityRef.on('value', (snapshot) => {
+      const data = snapshot.val();
+      document.getElementById('lightIntensity').textContent = data;
+    });
+
+    // Function to control the fan
+    function controlFan(command) {
+      console.log('Fan control command:', command);
+
+      // Set the control command in the database
+      database.ref('esp8266/fan/control').set(command).then(() => {
+        console.log('Fan control command sent successfully');
+
+        // Schedule removal of the control command after 1 minute
+        setTimeout(() => {
+          database.ref('esp8266/fan/control').remove().then(() => {
+            console.log('Fan control command removed');
+          }).catch((error) => {
+            console.error('Error removing fan control command:', error);
+          });
+        }, 30000); // 30000 milliseconds = 30 seconds
+      }).catch((error) => {
+        console.error('Error sending fan control command:', error);
+      });
+    }
+
+    // Function to control the pump
+    function controlPump(command) {
+      console.log('Pump control command:', command);
+      database.ref('esp8266/pump/control').set(command).then(() => {
+        console.log('Pump control command sent successfully');
+
+        // Schedule removal of the control command after 1 minute
+        setTimeout(() => {
+          database.ref('esp8266/pump/control').remove().then(() => {
+            console.log('Pump control command removed');
+          }).catch((error) => {
+            console.error('Error removing pump control command:', error);
+          });
+        }, 30000); // 30000 milliseconds = 30 seconds
+      }).catch((error) => {
+        console.error('Error sending pump control command:', error);
+      });
+    }
+
+    // Function to control the light
+    function controlLight(command) {
+      console.log('Light control command:', command);
+      database.ref('esp8266/light/control').set(command).then(() => {
+        console.log('Light control command sent successfully');
+
+        // Schedule removal of the control command after 1 minute
+        setTimeout(() => {
+          database.ref('esp8266/light/control').remove().then(() => {
+            console.log('Light control command removed');
+          }).catch((error) => {
+            console.error('Error removing light control command:', error);
+          });
+        }, 30000); // 30000 milliseconds = 30 seconds
+      }).catch((error) => {
+        console.error('Error sending light control command:', error);
+      });
+    }
+  </script>
+</body>
+</html>

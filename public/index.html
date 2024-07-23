@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sign Up</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: url('https://cdn.shopify.com/s/files/1/0724/4598/5057/files/monstera_plant_3.png?v=1705475753') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+      padding: 10px;
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 0;
+    }
+
+    h1 {
+      margin-top: 20px;
+      z-index: 1;
+      font-size: 2em;
+      text-align: center;
+    }
+
+    .signup-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+      width: 100%;
+      max-width: 400px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      z-index: 1;
+      margin-top: 20px;
+      text-align: center;
+    }
+
+    .signup-container input {
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1em;
+      margin-bottom: 20px;
+      width: 100%;
+    }
+
+    .signup-container button {
+      background-color: #ff9800;
+      color: white;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s;
+      font-size: 1em;
+    }
+
+    .signup-container button:hover {
+      background-color: #fb8c00;
+      transform: scale(1.05);
+    }
+
+    .login-link {
+      color: #ff9800;
+      cursor: pointer;
+      text-decoration: underline;
+    }
+
+    .login-link:hover {
+      color: #fb8c00;
+    }
+
+    @media (max-width: 768px) {
+      .signup-container {
+        padding: 20px;
+      }
+
+      .signup-container input {
+        padding: 8px;
+        font-size: 0.9em;
+      }
+
+      .signup-container button {
+        padding: 8px 20px;
+        font-size: 0.9em;
+      }
+
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .signup-container button {
+        padding: 6px 15px;
+        font-size: 0.8em;
+      }
+
+      .signup-container input {
+        padding: 6px;
+        font-size: 0.8em;
+      }
+
+      h1 {
+        font-size: 1.6em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Sign Up for Smart Greenhouse</h1>
+  <div class="signup-container">
+    <input type="text" placeholder="First Name" id="first-name">
+    <input type="text" placeholder="Last Name" id="last-name">
+    <input type="email" placeholder="Email" id="email">
+    <input type="password" placeholder="Password" id="password">
+    <input type="password" placeholder="Confirm Password" id="confirm-password">
+    <button id="signbtn">Sign Up</button>
+    <p>Already have an account? <span class="login-link" onclick="goToLogin()">Login</span></p>
+  </div>
+
+  <script>
+    function goToLogin() {
+      window.location.href = 'login.html';
+    }
+  </script>
+  
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+  
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBh8fzcEDsX73eoIWUxnSogCLd6QyrkN0Q",
+      authDomain: "greenhouse-ae8d7.firebaseapp.com",
+      databaseURL: "https://greenhouse-ae8d7-default-rtdb.firebaseio.com",
+      projectId: "greenhouse-ae8d7",
+      storageBucket: "greenhouse-ae8d7.appspot.com",
+      messagingSenderId: "50555422808",
+      appId: "1:50555422808:web:f9e2177d1d60e81655222d"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+
+    function signup() {
+      const firstName = document.getElementById('first-name').value;
+      const lastName = document.getElementById('last-name').value;
+      const email = document.getElementById('email').value;
+      const password = document.getElementById('password').value;
+      const confirmPassword = document.getElementById('confirm-password').value;
+
+      if (!firstName || !lastName || !email || !password || !confirmPassword) {
+        alert('All fields must be filled out');
+        return;
+      }
+
+      if (password !== confirmPassword) {
+        alert('Passwords do not match');
+        return;
+      }
+
+      createUserWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed up 
+        const user = userCredential.user;
+        // Redirect to login.html
+        window.location.href = 'login.html';
+      })
+      .catch((error) => {
+        const errorMessage = error.message;
+        console.error("Signup failed:", errorMessage);
+        alert(errorMessage);
+      });
+    }
+    
+    document.getElementById("signbtn").addEventListener("click", signup);
+  </script>
+</body>
+</html>

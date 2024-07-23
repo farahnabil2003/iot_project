@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: url('https://cdn.shopify.com/s/files/1/0724/4598/5057/files/monstera_plant_3.png?v=1705475753') no-repeat center center fixed;
+      background-size: cover;
+      color: #fff;
+      margin: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      overflow: hidden;
+      position: relative;
+      padding: 10px; /* Added padding for mobile */
+    }
+
+    body::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+      z-index: 0;
+    }
+
+    h1 {
+      margin-top: 20px;
+      z-index: 1;
+      font-size: 2em;
+      text-align: center; /* Center align for mobile */
+    }
+
+    .login-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3);
+      width: 100%; /* Adjusted for full width */
+      max-width: 400px;
+      border: 2px solid rgba(255, 255, 255, 0.3);
+      z-index: 1;
+      margin-top: 20px;
+      text-align: center; /* Center align text */
+    }
+
+    .login-container input {
+      padding: 10px;
+      border-radius: 8px;
+      border: none;
+      font-size: 1em;
+      margin-bottom: 20px;
+      width: 100%;
+    }
+
+    .login-container button {
+      background-color: #ff9800;
+      color: white;
+      border: none;
+      padding: 10px 25px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background-color 0.3s, transform 0.3s;
+      font-size: 1em;
+    }
+
+    .login-container button:hover {
+      background-color: #fb8c00;
+      transform: scale(1.05);
+    }
+
+    /* Media queries for mobile responsiveness */
+    @media (max-width: 768px) {
+      .login-container {
+        padding: 20px;
+      }
+
+      .login-container input {
+        padding: 8px;
+        font-size: 0.9em;
+      }
+
+      .login-container button {
+        padding: 8px 20px;
+        font-size: 0.9em;
+      }
+
+      h1 {
+        font-size: 1.8em;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .login-container button {
+        padding: 6px 15px;
+        font-size: 0.8em;
+      }
+
+      .login-container input {
+        padding: 6px;
+        font-size: 0.8em;
+      }
+
+      h1 {
+        font-size: 1.6em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <h1>Welcome to Greenhouse</h1>
+  <div class="login-container">
+    <input type="text" placeholder="Enter Your Email" id="username">
+    <input type="password" placeholder="Enter Your Password" id="password">
+    <button id="loginBtn">Login</button>
+  </div>
+
+  <script type="module">
+    // Import the functions you need from the SDKs you need
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword } from 'https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js';
+  
+    // Your web app's Firebase configuration
+    const firebaseConfig = {
+      apiKey: "AIzaSyBh8fzcEDsX73eoIWUxnSogCLd6QyrkN0Q",
+      authDomain: "greenhouse-ae8d7.firebaseapp.com",
+      databaseURL: "https://greenhouse-ae8d7-default-rtdb.firebaseio.com",
+      projectId: "greenhouse-ae8d7",
+      storageBucket: "greenhouse-ae8d7.appspot.com",
+      messagingSenderId: "50555422808",
+      appId: "1:50555422808:web:f9e2177d1d60e81655222d"
+    };
+  
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+
+    // Initialize Firebase Authentication and get a reference to the service
+    const auth = getAuth(app);
+
+    async function login(emailInput, passwordInput) {
+      // Get email and password values from input fields
+      const email = emailInput.value.trim(); // Trim whitespace
+      const password = passwordInput.value;
+
+      try {
+        const userCredential = await signInWithEmailAndPassword(auth, email, password);
+        // User successfully logged in
+        const user = userCredential.user;
+        console.log("Logged in user:", user.email);
+        // Redirect to home.html
+        window.location.href = "home.html";
+      } catch (error) {
+        const errorMessage = error.message;
+        console.error("Login failed:", errorMessage);
+        // Display error message to the user (e.g., using an alert or DOM manipulation)
+        alert(errorMessage); // Example of displaying an alert with the error message
+      }
+    }
+
+    document.getElementById("loginBtn").addEventListener("click", () => {
+      login(document.getElementById("username"), document.getElementById("password"));
+    });
+  </script>
+</body>
+</html>
